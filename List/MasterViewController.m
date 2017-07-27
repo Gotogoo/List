@@ -10,20 +10,38 @@
 #import "DetailViewController.h"
 
 @interface MasterViewController ()
-@property int num;
+@property NSMutableArray *DataSource;
 @property NSMutableArray *objects;
+@property int index;
+- (void)initDataSource;
+- (void)fixDataSource;
 @end
 
 @implementation MasterViewController
+
+- (void)initDataSource{
+    self.DataSource = [[NSMutableArray alloc] init];
+    for(int i = 0;i < 10; i++){
+        NSNumber *num = [NSNumber numberWithInt:i+1];
+        [self.DataSource addObject:num];
+    }
+}
+
+- (void)fixDataSource{
+    NSEnumerator *enumer = [self.DataSource reverseObjectEnumerator];
+    self.DataSource = [[NSMutableArray alloc]initWithArray:[enumer allObjects]];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
-    self.num = 10;
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
     self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    
+    self.initDataSource;
+    //self.fixDataSource;
 }
 
 
@@ -44,13 +62,33 @@
         self.objects = [[NSMutableArray alloc] init];
     }
     
-    if (self.num > 0){
+    
+    if (self.DataSource.count > 0){
+        NSNumber *data = [self.DataSource objectAtIndex:(self.DataSource.count - 1)];
+        [self.DataSource removeLastObject];
+        [self.objects insertObject:data atIndex:0];
+    }
+    
+    /*
+    //removeObjectsAtIndexes:0挂了
+    if (self.DataSource.count > 0){
+        NSNumber *data = [self.DataSource objectAtIndex:0];
+        [self.DataSource removeObjectsAtIndexes:0];
+        [self.objects insertObject:data atIndex:0];
+    }
+     */
+    else{
+        return;
+    }
+    
+    /*
+    if (self.DataSource.count > 0){
         [self.objects insertObject:[[NSNumber alloc] initWithInt:(self.num--)] atIndex:0];
     }
     else {
         return;
     }
-
+     */
     
     //[self.objects insertObject:[NSDate date] atIndex:0];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
